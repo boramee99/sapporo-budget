@@ -46,21 +46,36 @@
         .section { margin-bottom: 20px; padding: 20px 15px; border: 1px solid var(--border-color); border-radius: 16px; background-color: #fff; }
         .section-title { font-weight: 700; margin-bottom: 12px; display: block; color: var(--point-lavender); border-left: 5px solid var(--point-lavender); padding-left: 10px; }
 
-        /* 입력창 스타일: 날짜 칸 길이를 맞추기 위해 box-sizing 추가 */
+        /* 입력창 스타일 수정: 날짜칸 높이와 너비 밸런스 조정 */
         input, select, button { 
             padding: 12px; 
             border-radius: 10px; 
             border: 1px solid var(--border-color); 
             width: 100%; 
-            box-sizing: border-box; /* 이 부분이 핵심입니다 */
+            box-sizing: border-box; /* 패딩이 전체 크기에 포함되도록 설정 */
             margin-bottom: 10px; 
             font-size: 0.95rem; 
+            display: block;
+            height: 45px; /* 모든 입력창 높이를 슬림하게 고정 */
         }
         
-        /* 날짜 입력창 폰트 유지 */
-        input[type="date"] { font-family: 'Pretendard', sans-serif; }
+        /* 날짜 입력창 전용 설정: 아이콘 공간으로 인한 이질감 해소 */
+        input[type="date"] { 
+            font-family: 'Pretendard', sans-serif;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
 
-        button { background-color: var(--point-lavender); color: white; border: none; font-weight: 700; cursor: pointer; }
+        input[type="checkbox"] {
+            accent-color: var(--point-lavender);
+            height: auto; /* 체크박스는 높이 고정 해제 */
+            width: auto;
+            display: inline-block;
+        }
+
+        button { background-color: var(--point-lavender); color: white; border: none; font-weight: 700; cursor: pointer; height: auto; min-height: 45px; }
 
         .total-summary {
             background-color: #f8f9fa;
@@ -88,13 +103,13 @@
         }
         .inline-item-box span { font-size: 0.7rem; color: #888; margin-bottom: 2px; }
         .inline-item-box b, .inline-item-box input { font-size: 0.85rem; font-weight: 700; text-align: center; }
-        .inline-item-box input { border: none; padding: 0; margin: 0; background: transparent; width: 100%; outline: none; color: var(--point-lavender-dark); }
+        .inline-item-box input { border: none; padding: 0; margin: 0; background: transparent; width: 100%; outline: none; color: var(--point-lavender-dark); height: auto; }
 
         .currency-toggle { display: flex; gap: 5px; margin-bottom: 10px; }
-        .currency-btn { flex: 1; padding: 8px; font-size: 0.85rem; background: #eee; color: #777; border-radius: 8px; cursor: pointer; border: 1px solid #ddd; transition: 0.2s; text-align: center; }
+        .currency-btn { flex: 1; padding: 8px; font-size: 0.85rem; background: #eee; color: #777; border-radius: 8px; cursor: pointer; border: 1px solid #ddd; transition: 0.2s; text-align: center; height: auto; display: flex; align-items: center; justify-content: center; }
         .currency-btn.active { background: var(--point-lavender); color: white; border-color: var(--point-lavender); }
 
-        .team-group { display: flex; flex-direction: row; align-items: center; gap: 15px; background-color: var(--accent-bg); padding: 12px 15px; border-radius: 12px; flex-wrap: nowrap; }
+        .team-group { display: flex; flex-direction: row; align-items: center; gap: 15px; background-color: var(--accent-bg); padding: 12px 15px; border-radius: 12px; flex-wrap: nowrap; overflow-x: auto; }
         .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
         th, td { border-bottom: 1px solid var(--border-color); padding: 12px 6px; text-align: left; }
@@ -107,10 +122,10 @@
         .badge-container { display: flex; flex-wrap: nowrap; gap: 4px; }
         .member-badge { display: inline-flex; align-items: center; white-space: nowrap; background: #fff; border: 1px solid #dee2e6; padding: 4px 6px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
         .member-badge.is-paid { background: #EEEEF6; color: #bbb; text-decoration: line-through; }
-        .member-badge input { width: auto; margin-right: 3px; margin-bottom: 0; }
+        .member-badge input { width: auto; margin: 0 3px 0 0; height: auto; }
 
-        .btn-edit { background-color: #f1f0f5; color: var(--point-lavender); padding: 6px 8px; width: auto; font-size: 0.75rem; margin-right: 3px; }
-        .btn-del { background-color: #fff5f5; color: #dc3545; padding: 6px 8px; width: auto; font-size: 0.75rem; }
+        .btn-edit { background-color: #f1f0f5; color: var(--point-lavender); padding: 6px 8px; width: auto; font-size: 0.75rem; margin-right: 3px; height: auto; display: inline-block; }
+        .btn-del { background-color: #fff5f5; color: #dc3545; padding: 6px 8px; width: auto; font-size: 0.75rem; height: auto; display: inline-block; }
 
         .result-box { display: none; background-color: var(--accent-bg); padding: 20px; border-radius: 18px; border: 2px solid var(--point-lavender); margin-top: 25px; }
         .transfer-item { padding: 12px; border-bottom: 1px dashed var(--border-color); background: #fff; margin-bottom: 10px; border-radius: 10px; font-size: 0.9rem; }
@@ -148,7 +163,7 @@
         <div style="background: #fff; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; gap: 10px;">
             <span style="font-size: 0.8rem; font-weight: bold;">적용 환율:</span>
             <span style="font-size: 0.85rem;">100엔당</span>
-            <input type="number" id="exchangeRate" value="900" style="width: 80px; margin-bottom: 0; padding: 5px; text-align: center;" oninput="saveBudget(); updateSummary();">
+            <input type="number" id="exchangeRate" value="900" style="width: 80px; margin-bottom: 0; padding: 5px; text-align: center; height: 35px;" oninput="saveBudget(); updateSummary();">
             <span style="font-size: 0.85rem;">원</span>
         </div>
     </div>
