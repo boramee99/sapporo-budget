@@ -46,7 +46,20 @@
         .section { margin-bottom: 20px; padding: 20px 15px; border: 1px solid var(--border-color); border-radius: 16px; background-color: #fff; }
         .section-title { font-weight: 700; margin-bottom: 12px; display: block; color: var(--point-lavender); border-left: 5px solid var(--point-lavender); padding-left: 10px; }
 
-        input, select, button { padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); width: 100%; box-sizing: border-box; margin-bottom: 10px; font-size: 0.95rem; }
+        /* 입력창 스타일: 날짜 칸 길이를 맞추기 위해 box-sizing 추가 */
+        input, select, button { 
+            padding: 12px; 
+            border-radius: 10px; 
+            border: 1px solid var(--border-color); 
+            width: 100%; 
+            box-sizing: border-box; /* 이 부분이 핵심입니다 */
+            margin-bottom: 10px; 
+            font-size: 0.95rem; 
+        }
+        
+        /* 날짜 입력창 폰트 유지 */
+        input[type="date"] { font-family: 'Pretendard', sans-serif; }
+
         button { background-color: var(--point-lavender); color: white; border: none; font-weight: 700; cursor: pointer; }
 
         .total-summary {
@@ -77,9 +90,8 @@
         .inline-item-box b, .inline-item-box input { font-size: 0.85rem; font-weight: 700; text-align: center; }
         .inline-item-box input { border: none; padding: 0; margin: 0; background: transparent; width: 100%; outline: none; color: var(--point-lavender-dark); }
 
-        /* 단위 선택 버튼 스타일 */
         .currency-toggle { display: flex; gap: 5px; margin-bottom: 10px; }
-        .currency-btn { flex: 1; padding: 8px; font-size: 0.85rem; background: #eee; color: #777; border-radius: 8px; cursor: pointer; border: 1px solid #ddd; transition: 0.2s; }
+        .currency-btn { flex: 1; padding: 8px; font-size: 0.85rem; background: #eee; color: #777; border-radius: 8px; cursor: pointer; border: 1px solid #ddd; transition: 0.2s; text-align: center; }
         .currency-btn.active { background: var(--point-lavender); color: white; border-color: var(--point-lavender); }
 
         .team-group { display: flex; flex-direction: row; align-items: center; gap: 15px; background-color: var(--accent-bg); padding: 12px 15px; border-radius: 12px; flex-wrap: nowrap; }
@@ -149,7 +161,7 @@
         </div>
         <input type="hidden" id="editKey" value="">
         <input type="hidden" id="currentUnit" value="JPY">
-        <input type="date" id="date" style="margin-bottom: 10px;">
+        <input type="date" id="date">
         <select id="payer">
             <option value="공동 공금">공동 공금</option>
             <option value="엄마아빠">엄마아빠</option>
@@ -159,7 +171,7 @@
         <input type="text" id="item" placeholder="항목 (예: 공항 리무진)">
         <div style="display: flex; gap: 5px; align-items: center; margin-bottom: 10px;">
             <input type="number" id="amount" placeholder="금액 입력" style="margin-bottom: 0;">
-            <span id="displayUnit" style="font-weight: bold; color: var(--point-lavender-dark);">¥</span>
+            <span id="displayUnit" style="font-weight: bold; color: var(--point-lavender-dark); min-width: 20px;">¥</span>
         </div>
         <input type="text" id="note" placeholder="비고 (메모)">
         
