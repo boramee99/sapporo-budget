@@ -46,67 +46,61 @@
         .section { margin-bottom: 20px; padding: 20px 15px; border: 1px solid var(--border-color); border-radius: 16px; background-color: #fff; }
         .section-title { font-weight: 700; margin-bottom: 12px; display: block; color: var(--point-lavender); border-left: 5px solid var(--point-lavender); padding-left: 10px; }
 
-        /* 입력창 스타일 수정: 날짜칸 높이와 너비 밸런스 조정 */
+        /* 모든 입력창 높이 및 텍스트 색상 통일 */
         input, select, button { 
-            padding: 12px; 
+            padding: 0 12px; /* 상하 패딩을 없애고 높이로 조절 */
             border-radius: 10px; 
             border: 1px solid var(--border-color); 
             width: 100%; 
-            box-sizing: border-box; /* 패딩이 전체 크기에 포함되도록 설정 */
+            box-sizing: border-box; 
             margin-bottom: 10px; 
             font-size: 0.95rem; 
             display: block;
-            height: 45px; /* 모든 입력창 높이를 슬림하게 고정 */
+            height: 45px; /* 모든 요소 높이 강제 통일 */
+            color: #000000;
+            line-height: 45px;
         }
         
-        /* 날짜 입력창 전용 설정: 아이콘 공간으로 인한 이질감 해소 */
+        /* 날짜 입력창 텍스트 색상 및 스타일 최적화 */
         input[type="date"] { 
             font-family: 'Pretendard', sans-serif;
-            padding-top: 8px;
-            padding-bottom: 8px;
+            color: #000000 !important;
             -webkit-appearance: none;
             appearance: none;
         }
 
+        /* 브라우저별 날짜 내부 텍스트 색상 강제 지정 */
+        input[type="date"]::-webkit-datetime-edit,
+        input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+        input[type="date"]::-webkit-datetime-edit-text,
+        input[type="date"]::-webkit-datetime-edit-month-field,
+        input[type="date"]::-webkit-datetime-edit-day-field,
+        input[type="date"]::-webkit-datetime-edit-year-field {
+            color: #000000 !important;
+        }
+
         input[type="checkbox"] {
             accent-color: var(--point-lavender);
-            height: auto; /* 체크박스는 높이 고정 해제 */
+            height: auto;
             width: auto;
             display: inline-block;
+            margin: 0;
         }
 
-        button { background-color: var(--point-lavender); color: white; border: none; font-weight: 700; cursor: pointer; height: auto; min-height: 45px; }
+        button { background-color: var(--point-lavender); color: white; border: none; font-weight: 700; cursor: pointer; line-height: 1.2; }
 
-        .total-summary {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            text-align: center;
-            border: 1px solid var(--border-color);
-        }
+        .total-summary { background-color: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 15px; text-align: center; border: 1px solid var(--border-color); }
         .main-total span { font-size: 0.9rem; color: #777; }
         .main-total b { font-size: 1.8rem; color: var(--point-lavender-dark); display: block; }
 
         .inline-summary { display: flex; align-items: stretch; gap: 8px; width: 100%; margin-bottom: 10px; }
-        .inline-item-box { 
-            flex: 1; 
-            background: #fff; 
-            padding: 8px 5px; 
-            border-radius: 10px; 
-            border: 1px solid var(--border-color); 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-            min-width: 0;
-        }
+        .inline-item-box { flex: 1; background: #fff; padding: 8px 5px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0; }
         .inline-item-box span { font-size: 0.7rem; color: #888; margin-bottom: 2px; }
         .inline-item-box b, .inline-item-box input { font-size: 0.85rem; font-weight: 700; text-align: center; }
         .inline-item-box input { border: none; padding: 0; margin: 0; background: transparent; width: 100%; outline: none; color: var(--point-lavender-dark); height: auto; }
 
         .currency-toggle { display: flex; gap: 5px; margin-bottom: 10px; }
-        .currency-btn { flex: 1; padding: 8px; font-size: 0.85rem; background: #eee; color: #777; border-radius: 8px; cursor: pointer; border: 1px solid #ddd; transition: 0.2s; text-align: center; height: auto; display: flex; align-items: center; justify-content: center; }
+        .currency-btn { flex: 1; padding: 8px; font-size: 0.85rem; background: #eee; color: #777; border-radius: 8px; cursor: pointer; border: 1px solid #ddd; transition: 0.2s; text-align: center; height: 45px; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
         .currency-btn.active { background: var(--point-lavender); color: white; border-color: var(--point-lavender); }
 
         .team-group { display: flex; flex-direction: row; align-items: center; gap: 15px; background-color: var(--accent-bg); padding: 12px 15px; border-radius: 12px; flex-wrap: nowrap; overflow-x: auto; }
@@ -120,12 +114,12 @@
         .amt-text { font-size: 0.85rem; color: #666; font-weight: 700; }
 
         .badge-container { display: flex; flex-wrap: nowrap; gap: 4px; }
-        .member-badge { display: inline-flex; align-items: center; white-space: nowrap; background: #fff; border: 1px solid #dee2e6; padding: 4px 6px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
+        .member-badge { display: inline-flex; align-items: center; white-space: nowrap; background: #fff; border: 1px solid #dee2e6; padding: 4px 6px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; height: auto; }
         .member-badge.is-paid { background: #EEEEF6; color: #bbb; text-decoration: line-through; }
-        .member-badge input { width: auto; margin: 0 3px 0 0; height: auto; }
+        .member-badge input { width: auto; margin: 0 3px 0 0; height: auto; display: inline-block; }
 
-        .btn-edit { background-color: #f1f0f5; color: var(--point-lavender); padding: 6px 8px; width: auto; font-size: 0.75rem; margin-right: 3px; height: auto; display: inline-block; }
-        .btn-del { background-color: #fff5f5; color: #dc3545; padding: 6px 8px; width: auto; font-size: 0.75rem; height: auto; display: inline-block; }
+        .btn-edit { background-color: #f1f0f5; color: var(--point-lavender); padding: 6px 8px; width: auto; font-size: 0.75rem; margin-right: 3px; height: auto; display: inline-block; line-height: 1; }
+        .btn-del { background-color: #fff5f5; color: #dc3545; padding: 6px 8px; width: auto; font-size: 0.75rem; height: auto; display: inline-block; line-height: 1; }
 
         .result-box { display: none; background-color: var(--accent-bg); padding: 20px; border-radius: 18px; border: 2px solid var(--point-lavender); margin-top: 25px; }
         .transfer-item { padding: 12px; border-bottom: 1px dashed var(--border-color); background: #fff; margin-bottom: 10px; border-radius: 10px; font-size: 0.9rem; }
@@ -149,7 +143,7 @@
         <div class="inline-summary">
             <div class="inline-item-box">
                 <span>환전한 공금(¥)</span>
-                <input type="number" id="publicBudget" placeholder="엔화 입력" oninput="saveBudget(); updateSummary();">
+                <input type="number" id="publicBudget" placeholder="엔화 입력" oninput="saveBudget(); updateSummary();" style="height: 30px; margin-bottom: 0;">
             </div>
             <div class="inline-item-box">
                 <span>공금 사용(¥)</span>
@@ -192,11 +186,11 @@
         
         <div style="font-size: 0.8rem; margin: 5px 0 8px; color: #777;">함께 부담할 팀 (N빵):</div>
         <div class="team-group" id="splitTargets">
-            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.9rem;"><input type="checkbox" value="엄마아빠" checked style="width: auto; margin: 0;"> 엄마아빠</label>
-            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.9rem;"><input type="checkbox" value="보람구현" checked style="width: auto; margin: 0;"> 보람구현</label>
-            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.9rem;"><input type="checkbox" value="다솜종민" checked style="width: auto; margin: 0;"> 다솜종민</label>
+            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.9rem;"><input type="checkbox" value="엄마아빠" checked> 엄마아빠</label>
+            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.9rem;"><input type="checkbox" value="보람구현" checked> 보람구현</label>
+            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.9rem;"><input type="checkbox" value="다솜종민" checked> 다솜종민</label>
         </div>
-        <button id="submitBtn" onclick="saveToFirebase()">💜 지출 기록하기 💜</button>
+        <button id="submitBtn" onclick="saveToFirebase()" style="margin-top: 15px;">💜 지출 기록하기 💜</button>
         <button id="cancelBtn" onclick="resetForm()" style="display:none; background:#95a5a6; margin-top:8px;">수정 취소</button>
     </div>
 
@@ -217,7 +211,7 @@
                 <tbody id="expenseTable"></tbody>
             </table>
         </div>
-        <button onclick="calculate()" style="background:#2c3e50; margin-top:20px; width:100%; font-size:1rem;">💰 최종 송금 결과 계산하기</button>
+        <button onclick="calculate()" style="background:#2c3e50; margin-top:20px; width:100%; font-size:1rem; height: 50px;">💰 최종 송금 결과 계산하기</button>
     </div>
 
     <div id="result" class="result-box">
@@ -306,7 +300,7 @@
             const tr = document.createElement('tr');
             const unitIcon = (ex.unit === 'KRW' ? '₩' : '¥');
             tr.innerHTML = `
-                <td class="no-wrap" style="font-size:0.75rem; color:#888;">${ex.date ? ex.date.substring(5) : '-'}</td>
+                <td class="no-wrap" style="font-size:0.75rem; color:#000;">${ex.date ? ex.date.substring(5) : '-'}</td>
                 <td class="no-wrap"><strong style="${isPublic ? 'color:#2980b9' : ''}">${ex.payer}</strong></td>
                 <td><div class="item-text">${ex.item}</div><div class="amt-text">${ex.amount.toLocaleString()}${unitIcon}</div></td>
                 <td>
