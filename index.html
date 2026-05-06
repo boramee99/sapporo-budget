@@ -172,12 +172,12 @@
         <input type="hidden" id="currentUnit" value="JPY">
         <input type="date" id="date">
         <select id="payer">
-            <option value="공동 공금">공동 공금</option>
+            <option value="공동공금">공동공금</option>
             <option value="엄마아빠">엄마아빠</option>
             <option value="보람구현">보람구현</option>
             <option value="다솜종민">다솜종민</option>
         </select>
-        <input type="text" id="item" placeholder="항목 (예: 공항 리무진)">
+        <input type="text" id="item" placeholder="항목 (예: 라벤더 아이스크림)">
         <div style="display: flex; gap: 5px; align-items: center; margin-bottom: 10px;">
             <input type="number" id="amount" placeholder="금액 입력" style="margin-bottom: 0;">
             <span id="displayUnit" style="font-weight: bold; color: var(--point-lavender-dark); min-width: 20px;">¥</span>
@@ -277,7 +277,7 @@
 
         const targets = selected.map(name => ({
             name: name,
-            hasPaid: (payer === "공동 공금" || name === payer)
+            hasPaid: (payer === "공동공금" || name === payer)
         }));
 
         const newEntry = { date, payer, item, amount, unit, note, targets };
@@ -296,7 +296,7 @@
 
         keys.forEach(key => {
             const ex = expensesData[key];
-            const isPublic = (ex.payer === "공동 공금");
+            const isPublic = (ex.payer === "공동공금");
             const tr = document.createElement('tr');
             const unitIcon = (ex.unit === 'KRW' ? '₩' : '¥');
             tr.innerHTML = `
@@ -331,7 +331,7 @@
             const ex = expensesData[key];
             const itemWon = (ex.unit === 'JPY' ? (ex.amount * rate) / 100 : ex.amount);
             totalWon += itemWon;
-            if (ex.payer === "공동 공금" && ex.unit === 'JPY') publicUsedYen += ex.amount;
+            if (ex.payer === "공동공금" && ex.unit === 'JPY') publicUsedYen += ex.amount;
         }
 
         const balanceYen = budgetYen - publicUsedYen;
@@ -398,7 +398,7 @@
 
         for (let key in expensesData) {
             const ex = expensesData[key];
-            if (ex.payer === "공동 공금") continue;
+            if (ex.payer === "공동공금") continue;
             
             const itemWon = (ex.unit === 'JPY' ? (ex.amount * rate) / 100 : ex.amount);
             const perTeam = itemWon / ex.targets.length;
