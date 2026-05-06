@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>우리 가족 삿포로 여행 가계부</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+        :root {
+            --bg-lavender-grey: #e6e6fa;
+            --card-white: #ffffff;
+            --primary-purple: #7f7f7f;
+            --point-lavender: #9370db;
+            --point-lavender-dark: #6a5acd;
+            --accent-bg: #f3f0f8;
+            --text-main: #4a4a4a;
+            --border-color: #dddbe4;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            background-color: var(--bg-lavender-grey);
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+            color: var(--text-main);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .card {
+            background: var(--card-white);
+            width: 100%;
+            max-width: 950px;
+            padding: 25px 15px;
+            border-radius: 24px;
+            box-shadow: 0 12px 40px rgba(112, 102, 119, 0.15);
+        }
+
+        h1 { text-align: center; color: var(--point-lavender); margin-bottom: 25px; font-size: 1.5rem; font-weight: 800; }
+        h1::before, h1::after { content: "🪻"; margin: 0 8px; }
+
+        .section { margin-bottom: 20px; padding: 20px 15px; border: 1px solid var(--border-color); border-radius: 16px; background-color: #fff; }
+        .section-title { font-weight: 700; margin-bottom: 12px; display: block; color: var(--point-lavender); border-left: 5px solid var(--point-lavender); padding-left: 10px; }
+
+        input, select, button { padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); width: 100%; box-sizing: border-box; margin-bottom: 10px; font-size: 0.95rem; }
+        button { background-color: var(--point-lavender); color: white; border: none; font-weight: 700; cursor: pointer; }
+
+        .total-summary {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        .main-total span { font-size: 0.9rem; color: #777; }
+        .main-total b { font-size: 1.8rem; color: var(--point-lavender-dark); display: block; }
+
+        .inline-summary { display: flex; align-items: stretch; gap: 8px; width: 100%; margin-bottom: 10px; }
+        .inline-item-box { 
+            flex: 1; 
+            background: #fff; 
+            padding: 8px 5px; 
+            border-radius: 10px; 
+            border: 1px solid var(--border-color); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            min-width: 0;
+        }
+        .inline-item-box span { font-size: 0.7rem; color: #888; margin-bottom: 2px; }
+        .inline-item-box b, .inline-item-box input { font-size: 0.85rem; font-weight: 700; text-align: center; }
+        .inline-item-box input { border: none; padding: 0; margin: 0; background: transparent; width: 100%; outline: none; color: var(--point-lavender-dark); }
+
+        /* 단위 선택 버튼 스타일 */
+        .currency-toggle { display: flex; gap: 5px; margin-bottom: 10px; }
+        .currency-btn { flex: 1; padding: 8px; font-size: 0.85rem; background: #eee; color: #777; border-radius: 8px; cursor: pointer; border: 1px solid #ddd; transition: 0.2s; }
+        .currency-btn.active { background: var(--point-lavender); color: white; border-color: var(--point-lavender); }
+
+        .team-group { display: flex; flex-direction: row; align-items: center; gap: 15px; background-color: var(--accent-bg); padding: 12px 15px; border-radius: 12px; flex-wrap: nowrap; }
+        .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th, td { border-bottom: 1px solid var(--border-color); padding: 12px 6px; text-align: left; }
+        th { background-color: var(--accent-bg); color: var(--primary-purple); font-size: 0.85rem; }
+
+        .no-wrap { white-space: nowrap; }
+        .item-text { font-size: 0.9rem; font-weight: 600; margin-bottom: 2px; }
+        .amt-text { font-size: 0.85rem; color: #666; font-weight: 700; }
+
+        .badge-container { display: flex; flex-wrap: nowrap; gap: 4px; }
+        .member-badge { display: inline-flex; align-items: center; white-space: nowrap; background: #fff; border: 1px solid #dee2e6; padding: 4px 6px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
+        .member-badge.is-paid { background: #EEEEF6; color: #bbb; text-decoration: line-through; }
+        .member-badge input { width: auto; margin-right: 3px; margin-bottom: 0; }
+
+        .btn-edit { background-color: #f1f0f5; color: var(--point-lavender); padding: 6px 8px; width: auto; font-size: 0.75rem; margin-right: 3px; }
+        .btn-del { background-color: #fff5f5; color: #dc3545; padding: 6px 8px; width: auto; font-size: 0.75rem; }
+
+        .result-box { display: none; background-color: var(--accent-bg); padding: 20px; border-radius: 18px; border: 2px solid var(--point-lavender); margin-top: 25px; }
+        .transfer-item { padding: 12px; border-bottom: 1px dashed var(--border-color); background: #fff; margin-bottom: 10px; border-radius: 10px; font-size: 0.9rem; }
+        .amt { color: var(--point-lavender-dark); font-weight: 800; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>우리 가족 삿포로 여행 가계부</h1>
+
+    <div class="total-summary">
+        <div class="main-total">
+            <span>총 지출액 (전체 원화 합산)</span>
+            <b id="grandTotal">0원</b>
+        </div>
+    </div>
+
+    <div class="section" style="background-color: #f0f4f8;">
+        <span class="section-title">💰 공금 및 환율 설정 (엔화 기준)</span>
+        <div class="inline-summary">
+            <div class="inline-item-box">
+                <span>환전한 공금(¥)</span>
+                <input type="number" id="publicBudget" placeholder="엔화 입력" oninput="saveBudget(); updateSummary();">
+            </div>
+            <div class="inline-item-box">
+                <span>공금 사용(¥)</span>
+                <b id="inlineUsed">0¥</b>
+            </div>
+            <div class="inline-item-box">
+                <span>공금 잔액(¥)</span>
+                <b id="inlineBalance">0¥</b>
+            </div>
+        </div>
+        <div style="background: #fff; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <span style="font-size: 0.8rem; font-weight: bold;">적용 환율:</span>
+            <span style="font-size: 0.85rem;">100엔당</span>
+            <input type="number" id="exchangeRate" value="900" style="width: 80px; margin-bottom: 0; padding: 5px; text-align: center;" oninput="saveBudget(); updateSummary();">
+            <span style="font-size: 0.85rem;">원</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <span class="section-title" id="formTitle">새 지출 기록</span>
+        <div class="currency-toggle">
+            <div id="unitKRW" class="currency-btn" onclick="setUnit('KRW')">₩ 원화 지출</div>
+            <div id="unitJPY" class="currency-btn active" onclick="setUnit('JPY')">¥ 엔화 지출</div>
+        </div>
+        <input type="hidden" id="editKey" value="">
+        <input type="hidden" id="currentUnit" value="JPY">
+        <input type="date" id="date" style="margin-bottom: 10px;">
+        <select id="payer">
+            <option value="공동 공금">공동 공금</option>
+            <option value="엄마아빠">엄마아빠</option>
+            <option value="보람구현">보람구현</option>
+            <option value="다솜종민">다솜종민</option>
+        </select>
+        <input type="text" id="item" placeholder="항목 (예: 공항 리무진)">
+        <div style="display: flex; gap: 5px; align-items: center; margin-bottom: 10px;">
+            <input type="number" id="amount" placeholder="금액 입력" style="margin-bottom: 0;">
+            <span id="displayUnit" style="font-weight: bold; color: var(--point-lavender-dark);">¥</span>
+        </div>
+        <input type="text" id="note" placeholder="비고 (메모)">
+        
+        <div style="font-size: 0.8rem; margin: 5px 0 8px; color: #777;">함께 부담할 팀 (N빵):</div>
+        <div class="team-group" id="splitTargets">
+            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.9rem;"><input type="checkbox" value="엄마아빠" checked style="width: auto; margin: 0;"> 엄마아빠</label>
+            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.9rem;"><input type="checkbox" value="보람구현" checked style="width: auto; margin: 0;"> 보람구현</label>
+            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.9rem;"><input type="checkbox" value="다솜종민" checked style="width: auto; margin: 0;"> 다솜종민</label>
+        </div>
+        <button id="submitBtn" onclick="saveToFirebase()">💜 지출 기록하기 💜</button>
+        <button id="cancelBtn" onclick="resetForm()" style="display:none; background:#95a5a6; margin-top:8px;">수정 취소</button>
+    </div>
+
+    <div class="section">
+        <span class="section-title">지출 목록 (보낸 팀 체크!)</span>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th width="12%">날짜</th>
+                        <th width="12%">결제팀</th>
+                        <th width="24%">항목/금액</th>
+                        <th width="28%">부담 팀 (체크 시 정산 제외)</th>
+                        <th width="12%">비고</th>
+                        <th width="12%">관리</th>
+                    </tr>
+                </thead>
+                <tbody id="expenseTable"></tbody>
+            </table>
+        </div>
+        <button onclick="calculate()" style="background:#2c3e50; margin-top:20px; width:100%; font-size:1rem;">💰 최종 송금 결과 계산하기</button>
+    </div>
+
+    <div id="result" class="result-box">
+        <h3 style="margin-top:0; color:var(--point-lavender-dark);">🪻 누구에게 보낼까요? (원화 기준)</h3>
+        <div id="settleList"></div>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = { databaseURL: "https://abcde-17ccf-default-rtdb.firebaseio.com/" };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const expensesRef = database.ref('expenses');
+    const settingsRef = database.ref('travelSettings');
+
+    const teams = ["엄마아빠", "보람구현", "다솜종민"];
+    let expensesData = {};
+
+    document.getElementById('date').value = new Date().toISOString().substring(0, 10);
+
+    settingsRef.on('value', (snapshot) => {
+        const settings = snapshot.val();
+        if (settings) {
+            if(settings.publicBudget) document.getElementById('publicBudget').value = settings.publicBudget;
+            if(settings.exchangeRate) document.getElementById('exchangeRate').value = settings.exchangeRate;
+            updateSummary();
+        }
+    });
+
+    expensesRef.on('value', (snapshot) => {
+        expensesData = snapshot.val() || {};
+        renderTable();
+        updateSummary();
+    });
+
+    function setUnit(unit) {
+        document.getElementById('currentUnit').value = unit;
+        document.getElementById('displayUnit').innerText = (unit === 'KRW' ? '₩' : '¥');
+        document.getElementById('unitKRW').classList.toggle('active', unit === 'KRW');
+        document.getElementById('unitJPY').classList.toggle('active', unit === 'JPY');
+    }
+
+    function saveBudget() {
+        const budget = document.getElementById('publicBudget').value;
+        const rate = document.getElementById('exchangeRate').value;
+        settingsRef.set({
+            publicBudget: budget ? parseInt(budget) : 0,
+            exchangeRate: rate ? parseInt(rate) : 900
+        });
+    }
+
+    function saveToFirebase() {
+        const date = document.getElementById('date').value;
+        const payer = document.getElementById('payer').value;
+        const item = document.getElementById('item').value;
+        const amount = parseInt(document.getElementById('amount').value);
+        const unit = document.getElementById('currentUnit').value;
+        const note = document.getElementById('note').value;
+        const selected = Array.from(document.querySelectorAll('#splitTargets input:checked')).map(cb => cb.value);
+        const editKey = document.getElementById('editKey').value;
+
+        if (!date || !item || !amount || selected.length === 0) return alert("정보를 모두 입력해주세요.");
+
+        const targets = selected.map(name => ({
+            name: name,
+            hasPaid: (payer === "공동 공금" || name === payer)
+        }));
+
+        const newEntry = { date, payer, item, amount, unit, note, targets };
+
+        if (editKey) {
+            expensesRef.child(editKey).update(newEntry).then(() => { resetForm(); });
+        } else {
+            expensesRef.push(newEntry).then(() => { clearInputs(); });
+        }
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('expenseTable');
+        tbody.innerHTML = '';
+        const keys = Object.keys(expensesData).sort((a, b) => new Date(expensesData[a].date) - new Date(expensesData[b].date));
+
+        keys.forEach(key => {
+            const ex = expensesData[key];
+            const isPublic = (ex.payer === "공동 공금");
+            const tr = document.createElement('tr');
+            const unitIcon = (ex.unit === 'KRW' ? '₩' : '¥');
+            tr.innerHTML = `
+                <td class="no-wrap" style="font-size:0.75rem; color:#888;">${ex.date ? ex.date.substring(5) : '-'}</td>
+                <td class="no-wrap"><strong style="${isPublic ? 'color:#2980b9' : ''}">${ex.payer}</strong></td>
+                <td><div class="item-text">${ex.item}</div><div class="amt-text">${ex.amount.toLocaleString()}${unitIcon}</div></td>
+                <td>
+                    <div class="badge-container">
+                        ${ex.targets.map((t, tIdx) => `
+                            <div class="member-badge ${t.hasPaid ? 'is-paid' : ''}" onclick="togglePaid('${key}', ${tIdx})">
+                                <input type="checkbox" ${t.hasPaid ? 'checked' : ''}> ${t.name}
+                            </div>
+                        `).join('')}
+                    </div>
+                </td>
+                <td style="font-size:0.75rem; color:#666;">${ex.note || '-'}</td>
+                <td class="no-wrap">
+                    <button class="btn-edit" onclick="editExpense('${key}')">수정</button>
+                    <button class="btn-del" onclick="deleteExpense('${key}')">삭제</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function updateSummary() {
+        let totalWon = 0, publicUsedYen = 0;
+        const budgetYen = parseInt(document.getElementById('publicBudget').value) || 0;
+        const rate = parseInt(document.getElementById('exchangeRate').value) || 900;
+
+        for (let key in expensesData) {
+            const ex = expensesData[key];
+            const itemWon = (ex.unit === 'JPY' ? (ex.amount * rate) / 100 : ex.amount);
+            totalWon += itemWon;
+            if (ex.payer === "공동 공금" && ex.unit === 'JPY') publicUsedYen += ex.amount;
+        }
+
+        const balanceYen = budgetYen - publicUsedYen;
+        document.getElementById('grandTotal').innerText = Math.floor(totalWon).toLocaleString() + "원";
+        document.getElementById('inlineUsed').innerText = publicUsedYen.toLocaleString() + "¥";
+        const inlineBal = document.getElementById('inlineBalance');
+        inlineBal.innerText = balanceYen.toLocaleString() + "¥";
+        inlineBal.style.color = balanceYen < 0 ? "#e74c3c" : "#6a5acd";
+    }
+
+    function togglePaid(key, tIdx) {
+        const currentTargets = expensesData[key].targets;
+        currentTargets[tIdx].hasPaid = !currentTargets[tIdx].hasPaid;
+        expensesRef.child(key).update({ targets: currentTargets });
+    }
+
+    function deleteExpense(key) {
+        if (prompt("비밀번호 (****)") === "4488") {
+            if(confirm("정말 삭제할까요?")) expensesRef.child(key).remove();
+        } else { alert("틀렸습니다."); }
+    }
+
+    function editExpense(key) {
+        if (prompt("비밀번호 (****)") === "4488") {
+            const ex = expensesData[key];
+            document.getElementById('editKey').value = key;
+            document.getElementById('date').value = ex.date;
+            document.getElementById('payer').value = ex.payer;
+            document.getElementById('item').value = ex.item;
+            document.getElementById('amount').value = ex.amount;
+            setUnit(ex.unit || 'JPY');
+            document.getElementById('note').value = ex.note || '';
+            const selectedNames = ex.targets.map(t => t.name);
+            document.querySelectorAll('#splitTargets input').forEach(cb => { cb.checked = selectedNames.includes(cb.value); });
+            document.getElementById('formTitle').innerText = "✏️ 내역 수정 중";
+            document.getElementById('submitBtn').innerText = "수정 완료";
+            document.getElementById('submitBtn').style.background = "#f39c12";
+            document.getElementById('cancelBtn').style.display = "block";
+            window.scrollTo(0, 0);
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('editKey').value = "";
+        document.getElementById('date').value = new Date().toISOString().substring(0, 10);
+        document.getElementById('formTitle').innerText = "새 지출 기록";
+        document.getElementById('submitBtn').innerText = "💜 지출 기록하기 💜";
+        document.getElementById('submitBtn').style.background = "#9370db";
+        document.getElementById('cancelBtn').style.display = "none";
+        setUnit('JPY');
+        clearInputs();
+    }
+
+    function clearInputs() {
+        document.getElementById('item').value = '';
+        document.getElementById('amount').value = '';
+        document.getElementById('note').value = '';
+    }
+
+    function calculate() {
+        const rate = parseInt(document.getElementById('exchangeRate').value) || 900;
+        let balances = {};
+        teams.forEach(t => balances[t] = 0);
+
+        for (let key in expensesData) {
+            const ex = expensesData[key];
+            if (ex.payer === "공동 공금") continue;
+            
+            const itemWon = (ex.unit === 'JPY' ? (ex.amount * rate) / 100 : ex.amount);
+            const perTeam = itemWon / ex.targets.length;
+
+            ex.targets.forEach(t => {
+                if (!t.hasPaid) {
+                    balances[ex.payer] += perTeam;
+                    balances[t.name] -= perTeam;
+                }
+            });
+        }
+
+        let debtors = [], creditors = [];
+        for (let t in balances) {
+            let b = Math.round(balances[t]);
+            if (b < -10) debtors.push({ name: t, amount: Math.abs(b) });
+            else if (b > 10) creditors.push({ name: t, amount: b });
+        }
+
+        const settleList = document.getElementById('settleList');
+        settleList.innerHTML = '';
+        let d = 0, c = 0;
+        while (d < debtors.length && c < creditors.length) {
+            let amount = Math.min(debtors[d].amount, creditors[c].amount);
+            settleList.innerHTML += `
+                <div class="transfer-item">
+                    <strong>${debtors[d].name}</strong> 팀 ➡️ <strong>${creditors[c].name}</strong> 팀<br>
+                    <span class="amt">${Math.floor(amount).toLocaleString()}원</span> 보내기
+                </div>`;
+            debtors[d].amount -= amount;
+            creditors[c].amount -= amount;
+            if (debtors[d].amount <= 10) d++;
+            if (creditors[c].amount <= 10) c++;
+        }
+        if (settleList.innerHTML === '') settleList.innerHTML = "모두 정산되었습니다! ✨";
+        document.getElementById('result').style.display = 'block';
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+</script>
+</body>
+</html>
